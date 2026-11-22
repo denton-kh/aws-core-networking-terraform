@@ -4,66 +4,7 @@ Reference Infrastructure-as-Code (IaC) project demonstrating core AWS networking
 
 ## Architecture Overview
 
-```mermaid
-flowchart TB
-    Internet((Internet))
-    Admin([Admin / Developer])
-
-    subgraph MainVPC["Main Production VPC (10.0.0.0/16)"]
-        IGW[Internet Gateway]
-        
-        subgraph PubSub["Public Subnets (Multi-AZ)"]
-            ALB[Application Load Balancer]
-            NAT[NAT Gateway]
-            Bastion["Bastion Host<br/>(Elastic IP)"]
-        end
-        
-        subgraph PrivSub["Private Subnets (Multi-AZ)"]
-            ASG["EC2 Auto Scaling Group<br/>(Web Servers)"]
-            EBS[("Encrypted EBS Volumes<br/>+ Automated Snapshots")]
-            ASG --- EBS
-        end
-        
-        VPCE["Gateway VPC Endpoints<br/>(S3 & DynamoDB)"]
-    end
-
-    subgraph SecondaryVPC["Internal / Analytics VPC (10.1.0.0/16)"]
-        subgraph PrivSub2["Private Subnets"]
-            InternalApp[Internal Service / DB]
-        end
-    end
-
-    subgraph AWSServices["AWS Managed Services"]
-        S3[(Amazon S3)]
-        DDB[(Amazon DynamoDB)]
-    end
-
-    %% External Traffic
-    Internet <--> IGW
-    IGW <--> ALB
-    Admin -- "SSH (My IP only)" --> Bastion
-    Bastion <--> IGW
-
-    %% Internal Routing
-    ALB --> ASG
-    Bastion -- "SSH via Private IP" --> ASG
-    ASG -. "OS Updates / Packages" .-> NAT --> IGW
-    ASG -- "Private Traffic (Free)" --> VPCE
-    VPCE <--> S3
-    VPCE <--> DDB
-
-    %% VPC Peering
-    PrivSub <-- "VPC Peering Connection" --> PrivSub2
-
-    %% Styling
-    classDef aws fill:#FF9900,stroke:#232F3E,stroke-width:2px,color:#232F3E,font-weight:bold;
-    classDef net fill:#E3F2FD,stroke:#1565C0,stroke-width:1.5px,color:#0D47A1;
-    classDef sec fill:#E8F5E9,stroke:#2E7D32,stroke-width:1.5px,color:#1B5E20;
-
-    class ALB,VPCE aws;
-    class IGW,NAT net;
-    class Bastion,ASG,EBS,InternalApp sec;
-```
+![Architecture](architecture.svg)
 
 ## Implemented Infrastructure Components
 
