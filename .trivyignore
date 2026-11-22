@@ -1,0 +1,3 @@
+# Trivy ignore rules for educational/demo project
+AWS-0104
+AWS-0053

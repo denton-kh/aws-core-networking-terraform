@@ -15,6 +15,31 @@ Reference Infrastructure-as-Code (IaC) project demonstrating core AWS networking
 * **Private AWS Service Access:** **Gateway VPC Endpoints** for S3 and DynamoDB so private EC2 instances can access storage over the internal AWS network without paying for NAT Gateway traffic.
 * **VPC Peering:** Direct private network connection between the Main Production VPC (`10.0.0.0/16`) and a secondary Internal VPC (`10.1.0.0/16`) with updated route tables.
 
+## Modules
+
+| Module | Description |
+|--------|-------------|
+| `modules/vpc` | Custom VPC with public/private subnets across 2 AZs, Internet Gateway, NAT Gateways, route tables, and Gateway VPC Endpoints for S3 and DynamoDB. |
+| `modules/bastion` | Hardened Bastion Host with Elastic IP and security group allowing SSH access from a trusted CIDR. |
+| `modules/compute` | Application Load Balancer, security groups, launch template with encrypted EBS, and Auto Scaling Group of EC2 instances in private subnets. |
+| `modules/peering` | VPC Peering connection between two VPCs in the same AWS account with route table updates. |
+
+## How to use
+
+1. Clone the repository.
+2. Update `environments/dev/main.tf` with a valid AMI ID for your region.
+3. Configure AWS credentials (`aws configure` or environment variables).
+4. Run:
+
+   ```bash
+   cd environments/dev
+   terraform init
+   terraform validate
+   terraform plan
+   ```
+
+   > ⚠️ This is an educational project. Running `terraform apply` will create real AWS resources that may incur costs.
+
 ## Repository Structure
 
 ```text
